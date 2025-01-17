@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+// The frontend (React app) interacts with the backend by sending HTTP requests to perform the CRUD actions.
+
 const App = () => {
   // state for creating notes
   const [notes, setNotes] = useState([]);
@@ -9,55 +11,61 @@ const App = () => {
   const [editingNote, setEditingNote] = useState(null);
   const [editedText, setEditedText] = useState("");
 
-  // fetch all notes
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/notes")
-      .then((response) => setNotes(response.data))
-      .catch((error) => console.error("error fetching notes:", error));
-  }, []);
-
-  // add new notes
+  // add new notes C
+  // In the frontend, when a user enters a note and clicks the "Add Note" button, we send a POST request to the backend.
   const addNote = () => {
     if (!noteText.trim()) return; // prevent empty notes
 
     axios
-      .post("http://localhost:5000/notes", { text: noteText })
+      .post("http://localhost:5000/notes", { text: noteText }) // a POST request is sent to the backend with the note text in the request body ({ text: noteText }).
       .then((response) => {
-        setNotes([...notes, response.data]); // refer ke line 15. addNote update notes by appending a new object { id, text }.
-        setNoteText("");
+        setNotes([...notes, response.data]); // On success, the new note is added to the notes state, which automatically updates the UI (React re-renders). addNote update notes by appending a new object { id, text }.
+        setNoteText(""); // The input field is cleared.
       })
       .catch((error) => console.error("Error adding note:", error));
   };
 
-  // delete existed notes
-  const deleteNote = (id) => {
+  // fetch all notes R
+  // The frontend fetches the list of notes when the app is first loaded using a GET request.
+  useEffect(() => {
     axios
-      .delete(`http://localhost:5000/notes/${id}`)
-      .then(() => {
-        setNotes(notes.filter((note) => note.id !== id));
-      })
-      .catch((error) => console.error("Error deleting note:", error));
-  };
+      .get("http://localhost:5000/notes")
+      .then((response) => setNotes(response.data)) // On success, the list of notes is saved in the notes state and displayed.
+      .catch((error) => console.error("error fetching notes:", error));
+  }, []); // will only run once, when the component mounts.
 
-  // update existing notes
+  // update existing notes U
+  // The frontend updates the state by replacing the old note with the new one, causing React to re-render the component.
   const editNote = (id, currentText) => {
     setEditingNote(id);
     setEditedText(currentText);
   };
+  // When a user edits a note, the frontend sends a PUT request to update it on the server.
   const saveEditedNote = () => {
     if (!editedText.trim()) return;
-
     axios
-      .put(`http://localhost:5000/notes/${editingNote}`, { text: editedText })
+      .put(`http://localhost:5000/notes/${editingNote}`, { text: editedText }) // When the user clicks "Save" after editing, a PUT request is sent to the backend with the note’s new text.
       .then((response) => {
         setNotes(
-          notes.map((note) => (note.id === editingNote ? response.data : note))
+          notes.map((note) => (note.id === editingNote ? response.data : note)) // The backend updates the note and returns the updated note.
         );
         setEditingNote(null); // clear editing state
         setEditedText(""); // clear input
       })
       .catch((error) => console.error("Error editing note:", error));
+  };
+
+  // delete existed notes D
+  // When the user clicks "Delete," the frontend sends a DELETE request with the note's id to the backend.
+  const deleteNote = (id) => {
+    axios
+      .delete(`http://localhost:5000/notes/${id}`)
+      .then(() => {
+        setNotes(notes.filter((note) => note.id !== id)); // If the note’s id matches the target id, that note will be filtered out (excluded from the new array).
+          // example: 2 !== 2 is false, so it will be excluded from the new array. But 3 !== 2 is true, so it stays in the array.
+        // filter() creates a new array with all elements that pass the condition specified in the callback function. It does not modify the original array
+      })
+      .catch((error) => console.error("Error deleting note:", error));
   };
 
   return (
@@ -81,7 +89,6 @@ const App = () => {
         </button>
       </div>
 
-      
       {/* Notes List */}
       <ul className="bg-white p-4 rounded shadow w-80">
         {notes.length > 0 ? (
