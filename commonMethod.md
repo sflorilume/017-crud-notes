@@ -28,77 +28,81 @@
 ### JSX Tree's Map for App.js
 
 Simplified
+
 ```php
 <div wrapper>
   ├── <h1>Notes App</h1>
   ├── <div> {/* Input and Add Note Button */}
   │     ├── <input placeholder="Enter a note..." value={noteText} onChange={(e) => setNoteText(e.target.value)} />
   │     └── <button onClick={addNote}>Add Note</button>
+  |
   ├── <ul> {/* Notes List */}
   │     ├── {notes.length > 0 ?
+  |     |   // If YES: notes.length > 0
   │     │     notes.map((note) => (
   │     │       <li key={note.id}>
+  │     │         {editingNote === note.id ?
+  |     |           | // If YES: editingNote === note.id (this condition is a magical term)
+  │     │           ├── <input
+  │     │           │     type="text"
+  │     │           │     value={editedText}
+  │     │           │     onChange={(e) => setEditedText(e.target.value)}
+  │     │           │   />
+  │     │           ├── <button onClick={saveEditedNote}>Save</button>
+  │     │           ├── <button onClick={() => setEditingNote(null)}>Cancel</button>
+  │     │           : // If NO: editingNote === note.id
+  │     │           ├── {note.text}
+  │     │           ├── <button onClick={() => editNote(note.id, note.text)}>Edit</button>
+  │     │           ├── <button onClick={() => deleteNote(note.id)}>Delete</button>
+  │     │       </li>
+  │     │     ))
+  |     |   // If NO: notes.length > 0
+  │     │     : <p>No notes yet</p>}
+  └── </ul>
+</div>
+```
+
+- Gen1: div wrapper
+- Gen2: h1, div, ul
+- Gen3a (div): input, button
+- Gen3b (ul): li, input, buttons (save, cancel, edit, delete), <p>
+
+
+Commented
+
+```less
+<div>
+  ├── <h1>Notes App</h1>  // Title of the app
+  ├── <div> {/* Input and Add Note Button */}
+  │     ├── <input placeholder="Enter a note..." value={noteText} onChange={(e) => setNoteText(e.target.value)} />
+  │     │    // Input field for entering a new note, binds to `noteText` state
+  │     └── <button onClick={addNote}>Add Note</button>
+  │          // Button to add the note, triggers the `addNote` function
+  |
+  ├── <ul> {/* Notes List */}
+  │     ├── {notes.length > 0 ?
+  │     │     notes.map((note) => ( // Iterating over each note in the `notes` array
+  │     │       <li key={note.id}>   // List item for each note
   │     │         {editingNote === note.id ?
   │     │           <input
   │     │             type="text"
   │     │             value={editedText}
   │     │             onChange={(e) => setEditedText(e.target.value)}
-  │     │           />
-  │     │           : note.text}
-  |     |
-  │     │         {/* Buttons */}
+  │     │           />  // If the note is being edited, show an input field for editing
+  │     │           : note.text}  // Otherwise, show the note's text
+  │     │
   │     │         {editingNote === note.id ?
   │     │           <>
   │     │             <button onClick={saveEditedNote}>Save</button>
+  │     │             // Save button to save edited text
   │     │             <button onClick={() => setEditingNote(null)}>Cancel</button>
+  │     │             // Cancel button to stop editing and revert changes
   │     │           </>
   │     │           :
   │     │           <>
   │     │             <button onClick={() => editNote(note.id, note.text)}>Edit</button>
-  │     │             <button onClick={() => deleteNote(note.id)}>Delete</button>
-  │     │           </>
-  │     │       </li>
-  │     │     ))
-  │     │     : <p>No notes yet</p>}
-  └── </ul>
-</div>
-
-```
-
-Commented
-```less
-<div>
-  ├── <h1>Notes App</h1>  // Title of the app
-  ├── <div> {/* Input and Add Note Button */}
-  │     ├── <input placeholder="Enter a note..." value={noteText} onChange={(e) => setNoteText(e.target.value)} /> 
-  │     │    // Input field for entering a new note, binds to `noteText` state
-  │     └── <button onClick={addNote}>Add Note</button> 
-  │          // Button to add the note, triggers the `addNote` function
-  |
-  ├── <ul> {/* Notes List */}
-  │     ├── {notes.length > 0 ? 
-  │     │     notes.map((note) => ( // Iterating over each note in the `notes` array
-  │     │       <li key={note.id}>   // List item for each note
-  │     │         {editingNote === note.id ? 
-  │     │           <input 
-  │     │             type="text" 
-  │     │             value={editedText} 
-  │     │             onChange={(e) => setEditedText(e.target.value)} 
-  │     │           />  // If the note is being edited, show an input field for editing
-  │     │           : note.text}  // Otherwise, show the note's text
-  │     │         
-  │     │         {editingNote === note.id ? 
-  │     │           <>
-  │     │             <button onClick={saveEditedNote}>Save</button> 
-  │     │             // Save button to save edited text
-  │     │             <button onClick={() => setEditingNote(null)}>Cancel</button> 
-  │     │             // Cancel button to stop editing and revert changes
-  │     │           </> 
-  │     │           : 
-  │     │           <>
-  │     │             <button onClick={() => editNote(note.id, note.text)}>Edit</button> 
   │     │             // Edit button to start editing a note
-  │     │             <button onClick={() => deleteNote(note.id)}>Delete</button> 
+  │     │             <button onClick={() => deleteNote(note.id)}>Delete</button>
   │     │             // Delete button to remove a note
   │     │           </>
   │     │       </li>
@@ -106,5 +110,4 @@ Commented
   │     │     : <p>No notes yet</p>}  // Message if there are no notes
   └── </ul>
 </div>
-
 ```
