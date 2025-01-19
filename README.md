@@ -29,7 +29,7 @@
 
 Simplified
 
-```php
+```less
 <div wrapper>
   ├── <h1>Notes App</h1>
   ├── <div> {/* Input and Add Note Button */}
