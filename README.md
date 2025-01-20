@@ -111,3 +111,46 @@ Commented
   └── </ul>
 </div>
 ```
+
+Sample graph:
+```mermaid
+graph TD
+    A[Source Code] --> B[Linting]
+    B --> C[Unit Tests]
+    C --> D[Build]
+    D --> E[Integration Tests]
+    E --> F[Deploy to Staging]
+    F --> G[Manual Approval]
+    G --> H[Deploy to Production]
+
+    H -->|Deploy| I[Production Servers]
+    H --> J[Monitor]
+    J -.-> K[Notifications]
+    K --> L[Feedback Loop]
+    
+    subgraph Build Pipeline
+        B
+        C
+        D
+    end
+
+    subgraph Test Pipeline
+        E
+    end
+
+    subgraph Deployment Pipeline
+        F
+        G
+        H
+    end
+
+    classDef green fill:#00FF00,stroke:#00CC00,color:#000000;
+    classDef red fill:#FF0000,stroke:#CC0000,color:#FFFFFF;
+    classDef blue fill:#0000FF,stroke:#0000FF,color:#FFFFFF;
+
+    class B,C,D green;
+    class E red;
+    class F,G,H blue;
+
+
+
